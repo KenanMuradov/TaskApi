@@ -16,15 +16,8 @@ namespace TaskApi.Services
             _config = config;
         }
 
-        public string GenerateSecurityToken(string id, string email, IEnumerable<string> roles, IEnumerable<Claim> userClaims)
+        public string GenerateSecurityToken(string id, string email)
         {
-            var claims = new[]
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, email),
-                new Claim("userId", id),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, string.Join(",", roles))
-            }.Concat(userClaims);
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Secret));
 
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -33,8 +26,7 @@ namespace TaskApi.Services
                 issuer: _config.Issuer,
                 audience: _config.Audience,
                 expires: DateTime.UtcNow.AddMinutes(_config.ExpireMunites),
-                signingCredentials: signingCredentials,
-                claims: claims
+                signingCredentials: signingCredentials
                 );
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
