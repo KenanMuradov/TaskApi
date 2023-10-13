@@ -92,11 +92,7 @@ namespace TaskApi
 
         public static IServiceCollection AddMyContext(this IServiceCollection services, IConfiguration configuration) 
         {
-            var cosmos = new CosmosConfig();
-            configuration.GetSection("Cosmos").Bind(cosmos);
-
-            services.AddDbContext<AppDbContext>(op => op.UseCosmos(cosmos.Uri, cosmos.Key, cosmos.DatabaseName));
-
+            services.AddDbContext<AppDbContext>(op => op.UseSqlServer(configuration.GetConnectionString("Default")));
             return services;
         }
 
