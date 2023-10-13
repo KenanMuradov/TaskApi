@@ -11,6 +11,7 @@ builder.Services.AddSwagger();
 builder.Services.AddMyContext(builder.Configuration);
 builder.Services.AddStorageManaganer(builder.Configuration);
 builder.Services.AddDomainServices();
+builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
 
 var app = builder.Build();
 

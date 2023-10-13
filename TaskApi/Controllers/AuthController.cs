@@ -23,7 +23,7 @@ namespace TaskApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<string>> Register(RegisterDTO request)
+        public async Task<ActionResult<string>> Register([FromForm]RegisterDTO request)
         {
             var existingUser = await _userService.FindUserByEmailAsync(request.Email);
             if (existingUser is not null)
@@ -35,6 +35,21 @@ namespace TaskApi.Controllers
                 return GenerateAccesToken(user.Id.ToString(), user.Email);
 
             return BadRequest(user);
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login(LoginDTO request)
+        {
+            var user = _userService.FindUserByEmailAsync(request.Email);
+            if (user is null)
+                return Conflict("User doesn't exists");
+
+            var result = await _userService.LoginAsync(request);
+
+            if(!result)
+                return Conflict("Password or email is incorrect");
+
+            return Ok(result);
         }
 
         private string GenerateAccesToken(string id, string email)

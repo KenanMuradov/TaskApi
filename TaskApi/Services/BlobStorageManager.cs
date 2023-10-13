@@ -54,7 +54,7 @@ namespace TaskApi.Services
         {
             try
             {
-                var fileId= Guid.NewGuid().ToString();
+                var fileId = Guid.NewGuid().ToString() + Path.GetExtension(fileName);
                 var serviceClient = new BlobServiceClient(_storageOptions.ConnectionString);
                 var containerClient = serviceClient.GetBlobContainerClient(_storageOptions.ContainerName);
                 BlobClient blobClient = containerClient.GetBlobClient(fileId);
@@ -77,10 +77,10 @@ namespace TaskApi.Services
         {
             try
             {
-                var fileId = Guid.NewGuid().ToString();
+                var fileId = Guid.NewGuid().ToString() + Path.GetExtension(fileName);
                 var serviceClient = new BlobServiceClient(_storageOptions.ConnectionString);
                 var containerClient = serviceClient.GetBlobContainerClient(_storageOptions.ContainerName);
-                BlobClient blobClient = containerClient.GetBlobClient(fileName);
+                BlobClient blobClient = containerClient.GetBlobClient(fileId);
 
                 using (stream)
                 {

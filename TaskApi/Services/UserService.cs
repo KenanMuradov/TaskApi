@@ -17,11 +17,26 @@ namespace TaskApi.Services
             _storageManager = storageManager;
         }
 
-        public async Task<User?> FindUserByEmailAsync(string email) => await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
-        public bool Login(LoginDTO model)
+        public async Task<User?> FindUserByEmailAsync(string email) 
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                return user;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> LoginAsync(LoginDTO model)
+        {
+            var user = await FindUserByEmailAsync(model.Email);
+            if(user is not null) 
+                return false;
+
+            return BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
         }
 
         public async Task<User?> RegisterAsync(RegisterDTO model)
@@ -33,7 +48,6 @@ namespace TaskApi.Services
 
                 var user = new User()
                 {
-                    Id = Guid.NewGuid(),
                     Name = model.Name,
                     Surname = model.Surname,
                     Email = model.Email,

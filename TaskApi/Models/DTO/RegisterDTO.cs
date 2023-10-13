@@ -1,4 +1,6 @@
-﻿namespace TaskApi.Models.DTO
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace TaskApi.Models.DTO
 {
     public class RegisterDTO
     {

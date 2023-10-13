@@ -4,6 +4,9 @@ using TaskApi.Models;
 using TaskApi.Services.Interfaces;
 using TaskApi.Services;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace TaskApi
 {
@@ -50,12 +53,49 @@ namespace TaskApi
             return services;
         }
 
+        public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped<IJWTService, JWTService>();
+
+            var jwtConfig = new JWTConfig();
+            configuration.GetSection("JWT").Bind(jwtConfig);
+
+            services.AddSingleton(jwtConfig);
+
+
+            // Add Authentication  after Identity
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, setup =>
+            {
+                setup.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = jwtConfig.Audience,
+                    ValidIssuer = jwtConfig.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret)),
+                };
+            });
+
+            services.AddAuthorization();
+
+            return services;
+        }
+
+
         public static IServiceCollection AddMyContext(this IServiceCollection services, IConfiguration configuration) 
         {
             var cosmos = new CosmosConfig();
             configuration.GetSection("Cosmos").Bind(cosmos);
 
-            services.AddDbContext<AppDbContext>(op => op.UseCosmos(cosmos.ConnectionString, cosmos.DatabaseName));
+            services.AddDbContext<AppDbContext>(op => op.UseSqlServer(configuration.GetConnectionString("Default")));
 
             return services;
         }
@@ -64,7 +104,6 @@ namespace TaskApi
         {
             services.AddTransient<IStorageManager, BlobStorageManager>();
             services.Configure<BlobStorageOptions>(configuration.GetSection("BlobStorage"));
-
             return services;
         }
 

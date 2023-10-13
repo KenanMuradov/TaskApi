@@ -6,7 +6,7 @@ namespace TaskApi.Services.Interfaces
     public interface IUserService
     {
         Task<User?> RegisterAsync(RegisterDTO model);
-        bool Login(LoginDTO model);
+        Task<bool> LoginAsync(LoginDTO model);
         public Task<User?> FindUserByEmailAsync(string email);
     }
 }
