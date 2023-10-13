@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskApi.Data;
 using TaskApi.Models;
+using TaskApi.Services.Interfaces;
+using TaskApi.Services;
 
 namespace TaskApi
 {
@@ -13,6 +15,19 @@ namespace TaskApi
 
             services.AddDbContext<AppDbContext>(op => op.UseCosmos(cosmos.ConnectionString, cosmos.DatabaseName));
 
+            return services;
+        }
+        public static IServiceCollection AddStorageManaganer(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IStorageManager, BlobStorageManager>();
+            services.Configure<BlobStorageOptions>(configuration.GetSection("BlobStorage"));
+
+            return services;
+        }
+
+        public static IServiceCollection AddDomainServices(this IServiceCollection services)
+        {
+            services.AddScoped<IUserService, UserService>();
             return services;
         }
     }

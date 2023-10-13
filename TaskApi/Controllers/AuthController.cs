@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TaskApi.Services.Interfaces;
 
 namespace TaskApi.Controllers
 {
@@ -7,5 +8,13 @@ namespace TaskApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly IUserService _userService;
+
+        public AuthController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+       
     }
 }
