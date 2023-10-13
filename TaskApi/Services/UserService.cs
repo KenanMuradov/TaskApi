@@ -24,7 +24,7 @@ namespace TaskApi.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> RegisterAsync(RegisterDTO model)
+        public async Task<User?> RegisterAsync(RegisterDTO model)
         {
             try
             {
@@ -45,11 +45,11 @@ namespace TaskApi.Services
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
 
-                return true;
+                return user;
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
         }
     }

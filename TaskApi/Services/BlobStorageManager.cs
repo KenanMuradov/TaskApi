@@ -1,5 +1,7 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
 using Microsoft.Extensions.Options;
+using TaskApi.Models;
 using TaskApi.Services.Interfaces;
 
 namespace TaskApi.Services
@@ -48,32 +50,34 @@ namespace TaskApi.Services
             return signedUrl;
         }
 
-        public bool UploadFile(Stream stream, string fileName, string contentType)
+        public string? UploadFile(Stream stream, string fileName, string contentType)
         {
             try
             {
+                var fileId= Guid.NewGuid().ToString();
                 var serviceClient = new BlobServiceClient(_storageOptions.ConnectionString);
                 var containerClient = serviceClient.GetBlobContainerClient(_storageOptions.ContainerName);
-                BlobClient blobClient = containerClient.GetBlobClient(fileName);
+                BlobClient blobClient = containerClient.GetBlobClient(fileId);
 
                 using (stream)
                 {
                     blobClient.Upload(stream, false);
                 }
 
-                return true;
+                return fileId;
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
 
         }
 
-        public async Task<bool> UploadFileAsync(Stream stream, string fileName, string contentType)
+        public async Task<string?> UploadFileAsync(Stream stream, string fileName, string contentType)
         {
             try
             {
+                var fileId = Guid.NewGuid().ToString();
                 var serviceClient = new BlobServiceClient(_storageOptions.ConnectionString);
                 var containerClient = serviceClient.GetBlobContainerClient(_storageOptions.ContainerName);
                 BlobClient blobClient = containerClient.GetBlobClient(fileName);
@@ -83,13 +87,12 @@ namespace TaskApi.Services
                     await blobClient.UploadAsync(stream, false);
                 }
 
-                return true;
+                return fileId;
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
         }
     }
-}
 }

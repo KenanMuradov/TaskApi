@@ -1,6 +1,13 @@
 ﻿namespace TaskApi.Services.Interfaces
 {
-    public class IStorageManager
+    public interface IStorageManager
     {
+        string GetSignedUrl(string fileName);
+        string? UploadFile(Stream stream, string fileName, string contentType);
+        Task<string?> UploadFileAsync(Stream stream, string fileName, string contentType);
+
+        bool DeleteFile(string fileName);
+        Task<bool> DeleteFileAsync(string fileName);
+
     }
 }
