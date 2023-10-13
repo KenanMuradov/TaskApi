@@ -1,22 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TaskApi.Data;
 using TaskApi.Services.Interfaces;
 
 namespace TaskApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class ProfileController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly IStorageManager _storageManager;
+        private readonly AppDbContext _context;
 
-        public ProfileController(IUserService userService, IStorageManager storageManager)
+        public ProfileController(IUserService userService, IStorageManager storageManager, AppDbContext context)
         {
             _userService = userService;
             _storageManager = storageManager;
+            _context = context;
         }
 
         [HttpGet("profilePhoto")]
@@ -28,6 +31,13 @@ namespace TaskApi.Controllers
 
             var url = _storageManager.GetSignedUrl(user.ProfilePhoto);
             return Ok(url);
+        }
+        [AllowAnonymous]
+        [HttpGet("get")]
+        public IActionResult Get()
+        {
+            var users = _context.Users?.ToList();
+            return Ok(users);
         }
     }
 }

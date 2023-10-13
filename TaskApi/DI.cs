@@ -95,7 +95,7 @@ namespace TaskApi
             var cosmos = new CosmosConfig();
             configuration.GetSection("Cosmos").Bind(cosmos);
 
-            services.AddDbContext<AppDbContext>(op => op.UseSqlServer(configuration.GetConnectionString("Default")));
+            services.AddDbContext<AppDbContext>(op => op.UseCosmos(cosmos.Uri, cosmos.Key, cosmos.DatabaseName));
 
             return services;
         }
