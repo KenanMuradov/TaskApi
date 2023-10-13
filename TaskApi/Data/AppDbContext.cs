@@ -6,15 +6,9 @@ namespace TaskApi.Data
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions options) : base(options) { }
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    base.OnConfiguring(optionsBuilder);
-        //}
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            modelBuilder.Entity<User>().ToContainer("Users");
-
+            base.OnConfiguring(optionsBuilder);
         }
 
         public DbSet<User>? Users { get; set; }
