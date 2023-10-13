@@ -7,6 +7,7 @@ namespace TaskApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProfileController : ControllerBase
     {
         private readonly IUserService _userService;

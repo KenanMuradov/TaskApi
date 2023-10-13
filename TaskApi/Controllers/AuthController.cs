@@ -40,7 +40,7 @@ namespace TaskApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginDTO request)
         {
-            var user = _userService.FindUserByEmailAsync(request.Email);
+            var user = await _userService.FindUserByEmailAsync(request.Email);
             if (user is null)
                 return Conflict("User doesn't exists");
 
@@ -49,7 +49,7 @@ namespace TaskApi.Controllers
             if(!result)
                 return Conflict("Password or email is incorrect");
 
-            return Ok(result);
+            return GenerateAccesToken(user.Id.ToString(), user.Email);
         }
 
         private string GenerateAccesToken(string id, string email)

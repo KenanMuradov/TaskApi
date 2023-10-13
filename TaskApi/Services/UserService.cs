@@ -33,7 +33,7 @@ namespace TaskApi.Services
         public async Task<bool> LoginAsync(LoginDTO model)
         {
             var user = await FindUserByEmailAsync(model.Email);
-            if(user is not null) 
+            if(user is null) 
                 return false;
 
             return BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
